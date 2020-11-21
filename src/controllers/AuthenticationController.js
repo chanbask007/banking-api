@@ -135,7 +135,7 @@ module.exports = {
                 }
             })
             // console.log('transactions',transactions);
-            res.status(200).send({'transactions':transactions})
+            res.status(200).send({'customer':req.userData,'transactions':transactions})
 
         }
         else if(role === 'banker'){
