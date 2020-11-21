@@ -33,13 +33,13 @@ module.exports = {
                     email: email
                 }
             })
-            
+
             if(!user){
                 return res.status(403).send({
                     error: 'user does not exist.!'
                 })
             }
-            
+
             const isPasswordValid = password == user.password
 
             if(!isPasswordValid){
@@ -72,15 +72,15 @@ module.exports = {
                 if(req.body.transactionType==='debit'){
                     console.log(user.balance,req.body.transactionAmount,req.body.transactionType);
                     if(user.balance > req.body.transactionAmount){
-                        
+
 
                             const account = await Account.create({
                             userEmail: req.userData.email,
                             transactionType: req.body.transactionType,
                             transactionAmount: req.body.transactionAmount
                         })
-                        
-                    
+
+
                        await User.update({balance: user.balance - account.transactionAmount},{where:{email:user.email}})
                         res.status(201).send({transaction:account})
 
@@ -93,34 +93,34 @@ module.exports = {
 
                 if(req.body.transactionType==='credit'){
                     console.log(user.balance,req.body.transactionAmount,req.body.transactionType);
-                    
+
 
                             const account = await Account.create({
                             userEmail: req.userData.email,
                             transactionType: req.body.transactionType,
                             transactionAmount: req.body.transactionAmount
                         })
-                        
-                    
+
+
                        await User.update({balance: user.balance + account.transactionAmount},{where:{email:user.email}})
                         res.status(201).send({transaction:account})
 
-                    
-                    
+
+
                 }
-                
+
             }catch(err){res.send({error:err})}
 
         }
         else{
             res.status(403).send({msg:'only customers can make transactions!'})
         }
-            
 
 
 
 
-        
+
+
 
     },
 
@@ -161,6 +161,7 @@ module.exports = {
     async users(req,res){
         if(req.userData.role ==='banker'){
         try{
+        const banker = req.userData
         const userTransactions = await User.findAll({where:{role:'customer'}})
         const data = userTransactions.map(user=>{
             return {
@@ -170,14 +171,15 @@ module.exports = {
 
             }
         })
-        
+
         res.status(200).send({
+            "banker": banker,
             "users": data
         })
     }
     catch(err){
         res.send({"error": err})
-        } 
+        }
     }
     else{
         res.status(403).send({'msg':'unauthorized access'})
@@ -199,4 +201,3 @@ module.exports = {
     }
 
 }
-
