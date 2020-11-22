@@ -81,8 +81,8 @@ module.exports = {
                         })
 
 
-                       await User.update({balance: user.balance - account.transactionAmount},{where:{email:user.email}})
-                        res.status(201).send({transaction:account})
+                       await  User.update({balance: user.balance - account.transactionAmount},{where:{email:user.email}})
+                        res.status(201).send({customer:{email: req.userData.email,updatedBalance: user.balance - account.transactionAmount},transaction:account})
 
                     }
                     else{
@@ -102,8 +102,8 @@ module.exports = {
                         })
 
 
-                       await User.update({balance: user.balance + account.transactionAmount},{where:{email:user.email}})
-                        res.status(201).send({transaction:account})
+                      await User.update({balance: user.balance + account.transactionAmount},{where:{email:user.email}})
+                        res.status(201).send({customer:{email:req.userData.email,updatedBalance:user.balance + account.transactionAmount},transaction:account})
 
 
 
@@ -132,7 +132,8 @@ module.exports = {
             const transactions = await Account.findAll({
                 where:{
                     userEmail: email
-                }
+                },
+                order:[['id','DESC']]
             })
             // console.log('transactions',transactions);
             res.status(200).send({'customer':req.userData,'transactions':transactions})
